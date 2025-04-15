@@ -83,7 +83,9 @@ puts '日 月 火 水 木 金 土'
   7.times{ |c|
     n = r*7 + c - wday
     if n > last_of_month
-      print "\n"
+      if c != 0
+        print "\n"
+      end
       exit
     elsif n == day
       printf("\e[30;47m%2d\e[0m", n)
@@ -92,7 +94,9 @@ puts '日 月 火 水 木 金 土'
     else
       print '  '
     end
-    print ' '
+    if c != 6
+      print ' '
+    end
   }
   print "\n"
 }
