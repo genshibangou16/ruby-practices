@@ -53,12 +53,10 @@ wday -= 1
 
 # 月末の判定
 last_of_month = if month.to_i == 2
-                  if (year.to_i % 100).zero? && year.to_i % 400 != 0
+                  if ((year.to_i % 100).zero? && !(year.to_i % 400).zero?) || !(year.to_i % 4).zero?
                     28
-                  elsif (year.to_i % 4).zero?
-                    29
                   else
-                    28
+                    29
                   end
                 elsif month.to_s.match?(/^(?:0?[469]|11)$/)
                   30
