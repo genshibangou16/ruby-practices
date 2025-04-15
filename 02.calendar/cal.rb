@@ -1,4 +1,5 @@
 #!/Users/sho.kitamura/.rbenv/shims/ruby
+# frozen_string_literal: true
 
 require 'date'
 
@@ -52,9 +53,9 @@ wday -= 1
 
 # 月末の判定
 last_of_month = if month.to_i == 2
-                  if year.to_i % 100 == 0 && year.to_i % 400 != 0
+                  if (year.to_i % 100).zero? && year.to_i % 400 != 0
                     28
-                  elsif year.to_i % 4 == 0
+                  elsif (year.to_i % 4).zero?
                     29
                   else
                     28
@@ -83,7 +84,7 @@ puts '日 月 火 水 木 金 土'
       exit
     elsif n == day
       printf("\e[30;47m%2d\e[0m", n)
-    elsif n > 0
+    elsif n.positive?
       print n.to_s.rjust(2)
     else
       print '  '
