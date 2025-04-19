@@ -2,38 +2,30 @@
 # frozen_string_literal: true
 
 require 'date'
+require 'optparse'
 
 today = Date.today
 
 year = today.year
 month = today.month
+day = today.day
 
-argv_year_index = ARGV.index('-y')
-argv_month_index = ARGV.index('-m')
+opt = OptionParser.new
 
-unless argv_year_index.nil?
-  argv_year = ARGV[argv_year_index + 1]
-  if argv_year.to_s.match?(/^\d+$/) && argv_year.to_i.between?(1, 9999)
-    year = argv_year
-  else
-    puts "cal: year '#{argv_year}' not in range 1..9999"
-    exit
-  end
+opt.on('-m [month]') do |v|
+  month = v.to_i if !v.nil?
 end
 
-unless argv_month_index.nil?
-  argv_month = ARGV[argv_month_index + 1]
-  if argv_month.to_s.match?(/^\d+$/) && argv_month.to_i.between?(1, 12)
-    month = argv_month
-  else
-    puts "cal: month '#{argv_month}' not in range 1..12"
-    exit
-  end
+opt.on('-y [year]') do |v|
+  year = v.to_i if !v.nil?
 end
 
-day = (today.day if argv_month_index.nil? && argv_year_index.nil?)
+opt.parse(ARGV)
 
-beginning_of_month = Date.parse("#{year}-#{month}-1")
+target_day = Date.new(year, month, day)
+day = today.day if today == target_day
+
+beginning_of_month = target_day = Date.new(year, month, 1)
 wday = beginning_of_month.wday
 wday -= 1
 
