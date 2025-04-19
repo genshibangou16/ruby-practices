@@ -25,21 +25,11 @@ opt.parse(ARGV)
 target_day = Date.new(year, month, day)
 day = today.day if today == target_day
 
-beginning_of_month = target_day = Date.new(year, month, 1)
+beginning_of_month = Date.new(year, month, 1)
+last_of_month = beginning_of_month.next_month.prev_day.day
+
 wday = beginning_of_month.wday
 wday -= 1
-
-last_of_month = if month.to_i == 2
-                  if ((year.to_i % 100).zero? && !(year.to_i % 400).zero?) || !(year.to_i % 4).zero?
-                    28
-                  else
-                    29
-                  end
-                elsif month.to_s.match?(/^(?:0?[469]|11)$/)
-                  30
-                else
-                  31
-                end
 
 puts "      #{month.to_s.rjust(2)}月 #{year}"
 
