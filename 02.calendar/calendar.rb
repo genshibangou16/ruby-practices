@@ -8,7 +8,6 @@ today = Date.today
 
 year = today.year
 month = today.month
-day = today.day
 
 opt = OptionParser.new
 
@@ -22,32 +21,30 @@ end
 
 opt.parse(ARGV)
 
-target_day = Date.new(year, month, day)
-day = today.day if today == target_day
-
 beginning_of_month = Date.new(year, month, 1)
 last_of_month = beginning_of_month.next_month.prev_day.day
 
 wday = beginning_of_month.wday
-wday -= 1
 
 puts "      #{month.to_s.rjust(2)}月 #{year}"
-
 puts '日 月 火 水 木 金 土'
-6.times do |r|
-  7.times  do |c|
-    n = (r * 7) + c - wday
-    if n > last_of_month
-      print "\n" if c != 0
+
+6.times do |row|
+  7.times  do |col|
+    day = (row * 7) + col - wday + 1
+    if day > last_of_month
+      print "\n" if col != 0
       exit
-    elsif n == day
-      printf("\e[30;47m%2d\e[0m", n)
-    elsif n.positive?
-      print n.to_s.rjust(2)
+    elsif day.positive?
+      if Date.new(year, month, day) == today
+        printf("\e[30;47m%2d\e[0m", day)
+      else
+        print day.to_s.rjust(2)
+      end
     else
       print '  '
     end
-    print ' ' if c != 6
+    print ' ' if col != 6
   end
   print "\n"
 end
