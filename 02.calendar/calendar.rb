@@ -11,12 +11,18 @@ month = today.month
 
 opt = OptionParser.new
 
-opt.on('-m [month]') do |v|
-  month = v.to_i if !v.nil?
+opt.on('-m [month]', Integer) do |m|
+  unless (1..12).cover?(m)
+    abort "cal: month '#{m}' not in range 1..12"
+  end
+  month = m
 end
 
-opt.on('-y [year]') do |v|
-  year = v.to_i if !v.nil?
+opt.on('-y [year]', Integer) do |y|
+  unless (1..9999).cover?(y)
+    abort "cal: year '#{y}' not in range 1..9999"
+  end
+  year = y
 end
 
 opt.parse(ARGV)
