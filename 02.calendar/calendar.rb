@@ -48,6 +48,6 @@ lines = "   " * beginning_of_month.wday
   end
 end
 
-lines += "\n" if !end_of_month.saturday?
+lines += "\n" unless end_of_month.saturday?
 
 print(lines)
