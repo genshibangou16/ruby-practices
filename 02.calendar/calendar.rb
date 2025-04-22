@@ -36,7 +36,7 @@ puts '日 月 火 水 木 金 土'
 lines = "   " * beginning_of_month.wday
 (beginning_of_month..end_of_month).each do |date|
   if today == date
-    lines += "\e[30;47m#{date.day}\e[0m"
+    lines += format("\e[30;47m%2d\e[0m",  date.day)
   else
     lines += date.day.to_s.rjust(2)
   end
