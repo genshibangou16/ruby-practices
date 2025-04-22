@@ -12,16 +12,12 @@ month = today.month
 opt = OptionParser.new
 
 opt.on('-m [month]', Integer) do |m|
-  unless (1..12).cover?(m)
-    abort "cal: month '#{m}' not in range 1..12"
-  end
+  abort "cal: month '#{m}' not in range 1..12" unless (1..12).cover?(m)
   month = m
 end
 
 opt.on('-y [year]', Integer) do |y|
-  unless (1..9999).cover?(y)
-    abort "cal: year '#{y}' not in range 1..9999"
-  end
+  abort "cal: year '#{y}' not in range 1..9999" unless (1..9999).cover?(y)
   year = y
 end
 
@@ -33,19 +29,19 @@ end_of_month = beginning_of_month.next_month.prev_day
 puts "      #{month.to_s.rjust(2)}月 #{year}"
 puts '日 月 火 水 木 金 土'
 
-lines = "   " * beginning_of_month.wday
+lines = '   ' * beginning_of_month.wday
 (beginning_of_month..end_of_month).each do |date|
-  if today == date
-    lines += format("\e[30;47m%2d\e[0m",  date.day)
-  else
-    lines += date.day.to_s.rjust(2)
-  end
+  lines += if today == date
+             format("\e[30;47m%2d\e[0m", date.day)
+           else
+             date.day.to_s.rjust(2)
+           end
 
-  if date.saturday?
-    lines += "\n"
-  else
-    lines += ' '
-  end
+  lines += if date.saturday?
+             "\n"
+           else
+             ' '
+           end
 end
 
 lines += "\n" unless end_of_month.saturday?
