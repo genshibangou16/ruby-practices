@@ -31,17 +31,8 @@ puts '日 月 火 水 木 金 土'
 
 lines = '   ' * beginning_of_month.wday
 (beginning_of_month..end_of_month).each do |date|
-  lines += if today == date
-             format("\e[30;47m%2d\e[0m", date.day)
-           else
-             date.day.to_s.rjust(2)
-           end
-
-  lines += if date.saturday?
-             "\n"
-           else
-             ' '
-           end
+  lines += today == date ? format("\e[30;47m%2d\e[0m", date.day) : date.day.to_s.rjust(2)
+  lines += date.saturday? ? "\n" : ' '
 end
 
 lines += "\n" unless end_of_month.saturday?
