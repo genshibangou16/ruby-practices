@@ -4,7 +4,7 @@
 COL_NUM = 3
 GAP = 2
 
-target_path = !ARGV[0].nil? ? ARGV[0] : '.'
+target_path = ARGV[0].nil? ? '.' : ARGV[0]
 target_path = File.join(target_path, '*')
 
 item_list_with_path = Dir.glob(target_path)
