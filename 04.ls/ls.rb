@@ -9,7 +9,7 @@ target_paths = ARGV.empty? ? ['.'] : ARGV
 def puts_files(path)
   target_path = File.join(path, '*')
   item_list_with_path = Dir.glob(target_path)
-  item_list = item_list_with_path.map { |i| i.split('/').last }
+  item_list = item_list_with_path.map { |i| File.basename(i) }
   max_length = item_list.map(&:length).max
   row_num = (item_list.length / COL_NUM.to_f).ceil
 
