@@ -2,9 +2,17 @@
 # frozen_string_literal: true
 
 COL_NUM = 3
-GAP = 2
+GAP = 3
 
-target_paths = ARGV.empty? ? ['.'] : ARGV
+def main
+  target_paths = ARGV.empty? ? ['.'] : ARGV
+  target_paths.each_with_index do |p, idx|
+    puts if target_paths.length > 1 && idx.positive?
+    puts "#{p}:" if target_paths.length > 1
+
+    puts_files(p)
+  end
+end
 
 def puts_files(path)
   target_path = File.join(path, '*')
@@ -25,9 +33,4 @@ def puts_files(path)
   end
 end
 
-target_paths.each_with_index do |p, idx|
-  puts if target_paths.length > 1 && idx.positive?
-  puts "#{p}:" if target_paths.length > 1
-
-  puts_files(p)
-end
+main
