@@ -5,10 +5,10 @@ throws = throws_str.split(',')
 
 throw_count = 0
 
-def calc_frame_score(target_throw_count, throws)
-  current_throw = parse_throw(throws[target_throw_count])
-  next_throw = parse_throw(throws[target_throw_count + 1])
-  next_next_throw = parse_throw(throws[target_throw_count + 2])
+def calc_frame_score(throw_count, throws)
+  current_throw = parse_throw(throws[throw_count])
+  next_throw = parse_throw(throws[throw_count + 1])
+  next_next_throw = parse_throw(throws[throw_count + 2])
 
   if strike?(current_throw)
     [calc_strike_score(next_throw, next_next_throw), 1]
@@ -44,9 +44,9 @@ def calc_normal_score(current_throw, next_throw)
 end
 
 total_score = 10.times.sum do
-  single_score, throw_move_count = calc_frame_score(throw_count, throws)
+  frame_score, throw_move_count = calc_frame_score(throw_count, throws)
   throw_count += throw_move_count
-  single_score
+  frame_score
 end
 
 puts total_score
