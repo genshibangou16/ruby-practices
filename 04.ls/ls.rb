@@ -9,11 +9,18 @@ GAP = 3
 def main
   params = parse_args
   target_paths = ARGV.empty? ? ['.'] : ARGV
+
+  files = target_paths.filter do |path|
+    File.file?(path)
+  end
+  unless files.empty?
+    format_list(files)
+    puts
+  end
+
   target_paths.each_with_index do |path, idx|
-    if File.file?(path)
-      puts path
-      next
-    end
+    next if File.file?(path)
+
     puts_header(path, idx) if target_paths.length > 1
     puts_files_on_path(path, params)
   end
@@ -35,13 +42,17 @@ end
 def puts_files_on_path(path, params)
   path = File.join(path, '*')
   file_list = get_file_list(path, params)
-  max_filename_length = file_list.map(&:length).max
-  row_num = (file_list.length / COL_NUM.to_f).ceil
+  format_list(file_list)
+end
+
+def format_list(files)
+  max_filename_length = files.map(&:length).max
+  row_num = (files.length / COL_NUM.to_f).ceil
 
   row_num.times do |row|
     line = ''
     COL_NUM.times do |col|
-      item = file_list[row + row_num * col]
+      item = files[row + row_num * col]
       next if item.nil?
 
       line += item.ljust(max_filename_length + GAP)
