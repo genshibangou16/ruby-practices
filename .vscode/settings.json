@@ -12,6 +12,10 @@
         "editor.tabSize": 2
     },
     "cSpell.words": [
-        "rubocop"
+        "DOTMATCH",
+        "ljust",
+        "optparse",
+        "rubocop",
+        "wday"
     ]
 }
