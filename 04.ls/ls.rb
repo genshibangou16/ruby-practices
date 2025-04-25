@@ -51,7 +51,8 @@ def puts_files_on_path(path, params)
 end
 
 def get_file_list(path, params)
-  file_list = params[:a] ? Dir.glob(path, File::FNM_DOTMATCH) : Dir.glob(path)
+  all_flag = params[:a] ? File::FNM_DOTMATCH : 0
+  file_list = Dir.glob(path, all_flag)
   file_list.map { |i| File.basename(i) }
 end
 
