@@ -62,8 +62,8 @@ def format_list(files)
 end
 
 def get_file_list(path, params)
-  all_flag = params[:a] ? File::FNM_DOTMATCH : 0
-  file_list = Dir.glob(path, all_flag)
+  flag_bits = params[:a] ? File::FNM_DOTMATCH : 0
+  file_list = Dir.glob(path, flag_bits)
   file_list.map { |i| File.basename(i) }
 end
 
