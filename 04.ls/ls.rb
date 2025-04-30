@@ -9,14 +9,12 @@ GAP = 3
 def main
   params = parse_args
   target_paths = ARGV.empty? ? ['.'] : ARGV
+  target_paths.sort!
 
   files = target_paths.filter do |path|
     File.file?(path)
   end
-  unless files.empty?
-    format_list(files)
-    puts
-  end
+  format_list(files) unless files.empty?
 
   target_paths.each_with_index do |path, idx|
     next if File.file?(path)
