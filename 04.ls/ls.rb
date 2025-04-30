@@ -10,15 +10,15 @@ def main
   params = parse_args
   target_paths = ARGV.empty? ? ['.'] : ARGV
   target_paths.sort!
+  target_paths.reverse! if params[:r]
 
-  files = target_paths.filter do |path|
-    File.file?(path)
+  files, directories = target_paths.partition { |path| File.file?(path) }
+  unless files.empty?
+    format_list(files)
+    puts unless directories.empty?
   end
-  format_list(files) unless files.empty?
 
-  target_paths.each_with_index do |path, idx|
-    next if File.file?(path)
-
+  directories.each_with_index do |path, idx|
     puts_header(path, idx) if target_paths.length > 1
     puts_files_on_path(path, params)
   end
@@ -28,6 +28,7 @@ def parse_args
   opt = OptionParser.new
   params = {}
   opt.on('-a') { |v| v }
+  opt.on('-r') { |v| v }
   opt.parse!(ARGV, into: params)
   params
 end
@@ -40,6 +41,7 @@ end
 def puts_files_on_path(path, params)
   path = File.join(path, '*')
   file_list = get_file_list(path, params)
+  file_list.reverse! if params[:r]
   format_list(file_list)
 end
 
