@@ -114,7 +114,7 @@ def print_stats(list:, only_basename:)
     timestamp = item.mtime.strftime('%_m %e %H:%M')
     symlink_target = item.symlink? ? File.readlink(key) : nil
     puts format(
-      "%<mode>s %<nlink>2d %<uid>#{max_lengths[:uid]}s  %<gid>#{max_lengths[:gid]}s  %<size>#{max_lengths[:size]}d %<mtime>s %<fname>s%<symlink>s",
+      "%<mode>s %<nlink>2d %<uid>-#{max_lengths[:uid]}s  %<gid>-#{max_lengths[:gid]}s  %<size>#{max_lengths[:size]}d %<mtime>s %<fname>s%<symlink>s",
       mode: parse_mode(item.mode),
       nlink: item.nlink,
       uid: Etc.getpwuid(item.uid).name,
