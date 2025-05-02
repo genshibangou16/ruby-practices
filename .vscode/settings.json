@@ -13,8 +13,11 @@
     },
     "cSpell.words": [
         "DOTMATCH",
+        "getgrgid",
         "ljust",
+        "nlink",
         "optparse",
+        "readlink",
         "rubocop",
         "wday"
     ]
