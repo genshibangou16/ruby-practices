@@ -34,9 +34,9 @@ end
 
 def check_file_existence(list)
   list.filter do |item|
-    is_exist = File.exist?(item)
-    puts "ls: #{item}: No such file or directory" unless is_exist
-    is_exist
+    file_exists = File.exist?(item)
+    puts "ls: #{item}: No such file or directory" unless file_exists
+    file_exists
   end
 end
 
@@ -111,19 +111,16 @@ def print_stats(list:, only_basename:)
     gid: list.values.map { |i| Etc.getgrgid(i.gid).name.length }.max
   }
   list.each do |key, item|
-    timestamp = item.mtime.strftime('%_m %e %H:%M')
-    symlink_target = item.symlink? ? File.readlink(key) : nil
-    puts format(
-      "%<mode>s %<nlink>2d %<uid>-#{max_lengths[:uid]}s  %<gid>-#{max_lengths[:gid]}s  %<size>#{max_lengths[:size]}d %<mtime>s %<fname>s%<symlink>s",
-      mode: parse_mode(item.mode),
-      nlink: item.nlink,
-      uid: Etc.getpwuid(item.uid).name,
-      gid: Etc.getgrgid(item.gid).name,
-      size: item.size,
-      mtime: timestamp,
-      fname: only_basename ? File.basename(key) : key,
-      symlink: symlink_target && " -> #{symlink_target}"
-    )
+    puts [
+      parse_mode(item.mode),
+      item.nlink.to_s.rjust(2),
+      Etc.getpwuid(item.uid).name.ljust(max_lengths[:uid] + 1),
+      Etc.getgrgid(item.gid).name.ljust(max_lengths[:gid] + 1),
+      item.size.to_s.rjust(max_lengths[:size]),
+      item.mtime.strftime('%_m %e %H:%M'),
+      only_basename ? File.basename(key) : key,
+      item.symlink? ? "-> #{File.readlink(key)}" : nil
+    ].join(' ')
   end
 end
 
