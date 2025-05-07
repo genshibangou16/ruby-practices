@@ -54,7 +54,7 @@ def print_long(files, directories, params)
 
   directories.each_with_index do |path, idx|
     files_in_dir = get_files_on_path(path, params)
-    stats = get_stats(files_in_dir)
+    stats = get_stats(sort(files_in_dir, params[:r]))
     total = stats.values.map(&:blocks).sum
     print_header(path, idx) if files.length + directories.length > 1
     puts "total #{total}"
@@ -125,55 +125,48 @@ def print_stats(list:, only_basename:)
 end
 
 def parse_mode(mode)
-  mode = mode.to_s(8)
-
-  type = get_filetype(mode[0..-5])
-  sticky = get_sticky(mode[-4])
-  permissions = mode[-3..].chars.map do |p|
-    get_permission(p)
-  end
-  [type, sticky, permissions].join
+  type = get_filetype(mode)
+  permissions = %w[t s s].map.with_index do |char, shift_width|
+    get_permission(mode, char, shift_width)
+  end.reverse
+  [type, permissions].join
 end
 
-def get_filetype(octal_digit)
-  case octal_digit.to_i
-  when 1
+def get_filetype(mode)
+  mode &= 0o170000
+  case mode
+  when 0o010000
     'p'
-  when 2
+  when 0o020000
     'c'
-  when 4
+  when 0o040000
     'd'
-  when 6
+  when 0o060000
     'b'
-  when 10
+  when 0o100000
     '-'
-  when 12
+  when 0o120000
     'l'
-  when 14
+  when 0o140000
     's'
   else
     abort 'Invalid value for filetype.'
   end
 end
 
-def get_sticky(octal_digit)
-  case octal_digit.to_i
-  when 0
-    ''
-  when 1
-    't'
-  when 2, 4
-    's'
-  else
-    abort 'Invalid value for sticky bit.'
-  end
-end
+def get_permission(mode, char, shift_width)
+  permission_bits = mode >> shift_width * 3
+  special_flag = (mode >> 9 + shift_width) & 1 == 1
 
-def get_permission(octal_digit)
-  binary_digit = octal_digit.to_i.to_s(2)
-  r = binary_digit[0].to_i.zero? ? '-' : 'r'
-  w = binary_digit[1].to_i.zero? ? '-' : 'w'
-  x = binary_digit[2].to_i.zero? ? '-' : 'x'
+  r         = (permission_bits >> 2)  & 1 == 1 ? 'r' : '-'
+  w         = (permission_bits >> 1)  & 1 == 1 ? 'w' : '-'
+  exec_flag = permission_bits         & 1 == 1
+
+  x = if special_flag
+        exec_flag ? char : char.upcase
+      else
+        exec_flag ? 'x' : '-'
+      end
   [r, w, x].join
 end
 
