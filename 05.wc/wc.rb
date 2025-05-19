@@ -8,9 +8,9 @@ DEFAULT_LENGTH = 7
 def main
   params = parse_args
   target_paths = ARGV
-  inputs_info = get_inputs_info(target_paths, params)
-  print_inputs_info(inputs_info)
-  print_total(inputs_info) if inputs_info.length > 1
+  strings_or_paths_data = parse_input_strings_or_paths(target_paths)
+  print_lines(strings_or_paths_data, params)
+  print_total(strings_or_paths_data, params) if strings_or_paths_data.length > 1
 end
 
 def parse_args
@@ -23,71 +23,74 @@ def parse_args
   params.values.any? ? params : { l: true, w: true, c: true }
 end
 
-def get_inputs_info(target_paths, params)
+def parse_input_strings_or_paths(target_paths)
   if target_paths.empty?
     [{
       path: nil,
       file_exists: true,
       is_directory: false,
-      info: get_info($stdin.read, params)
+      wc_data: get_wc_data($stdin.read)
     }]
   else
     target_paths.map do |path|
       file_exists = File.exist?(path)
       is_directory = File.directory?(path)
       {
-        path: path,
-        file_exists: file_exists,
-        is_directory: is_directory,
-        info: file_exists && !is_directory && get_info(File.read(path), params)
+        path:,
+        file_exists:,
+        is_directory:,
+        wc_data: file_exists && !is_directory && get_wc_data(File.read(path))
       }
     end
   end
 end
 
-def get_info(str, params)
+def get_wc_data(str)
   {
-    size: params[:c] && str.length,
-    lines: params[:l] && str.count("\n"),
-    words: params[:w] && str.scan(/\S+/).size
+    c: str.length,
+    l: str.count("\n"),
+    w: str.scan(/\S+/).size
   }
 end
 
-def print_inputs_info(inputs_info)
-  inputs_info.each do |input_info|
-    puts "wc: #{input_info[:path]}: open: No such file or directory" unless input_info[:file_exists]
-    puts "wc: #{input_info[:path]}: read: Is a directory" if input_info[:is_directory]
-    next if !input_info[:file_exists] || input_info[:is_directory]
+def print_lines(strings_or_paths_data, params)
+  strings_or_paths_data.each do |string_or_path_data|
+    unless string_or_path_data[:file_exists]
+      puts "wc: #{string_or_path_data[:path]}: open: No such file or directory"
+      next
+    end
+    if string_or_path_data[:is_directory]
+      puts "wc: #{string_or_path_data[:path]}: read: Is a directory"
+      next
+    end
 
-    print_info(input_info[:info], input_info[:path])
+    print_line(string_or_path_data[:wc_data], string_or_path_data[:path], params)
   end
 end
 
-def print_info(info, path)
+def print_line(wc_data, path, params)
   puts [
     '',
-    *format_info(info),
+    *format_wc_data(wc_data, params),
     path
-  ].reject(&:nil?).join(' ')
+  ].compact.join(' ')
 end
 
-def format_info(info)
-  %i[lines words size].map do |key|
-    next if info[key].nil?
-
-    width = [info[key].to_s.length, DEFAULT_LENGTH].max
-    info[key].to_s.rjust(width)
+def format_wc_data(data, params)
+  params.keys.map do |key|
+    width = [data[key].to_s.length, DEFAULT_LENGTH].max
+    data[key].to_s.rjust(width)
   end
 end
 
-def print_total(inputs_info)
+def print_total(strings_or_paths, params)
   total = Hash.new(0)
-  inputs_info.each do |input_info|
-    next unless input_info[:info]
+  strings_or_paths.each do |string_or_path|
+    next unless string_or_path[:wc_data]
 
-    input_info[:info].each { |k, v| total[k] += v.to_i }
+    string_or_path[:wc_data].each { |k, v| total[k] += v.to_i }
   end
-  print_info(total.filter { |_, v| v.positive? }, 'total')
+  print_line(total.filter { |_, v| v.positive? }, 'total', params)
 end
 
 main
