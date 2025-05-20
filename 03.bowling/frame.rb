@@ -21,7 +21,7 @@ class Frame
     strike? || spare? ? @first_shot.score + @second_shot.score + @third_shot.score : @first_shot.score + @second_shot.score
   end
 
-  def step
+  def shot_count
     strike? ? 1 : 2
   end
 end

@@ -12,7 +12,7 @@ class Game
         marks[throw_count + 1],
         marks[throw_count + 2] || nil
       )
-      throw_count += frame.step
+      throw_count += frame.shot_count
       frame
     end
   end
