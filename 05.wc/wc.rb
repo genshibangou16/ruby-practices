@@ -29,7 +29,7 @@ def parse_input_strings(target_paths)
       path: nil,
       file_exists: true,
       is_directory: false,
-      wc_data: get_wc_data($stdin.read)
+      count: get_count($stdin.read)
     }]
   else
     target_paths.map do |path|
@@ -39,13 +39,13 @@ def parse_input_strings(target_paths)
         path:,
         file_exists:,
         is_directory:,
-        wc_data: file_exists && !is_directory && get_wc_data(File.read(path))
+        count: file_exists && !is_directory && get_count(File.read(path))
       }
     end
   end
 end
 
-def get_wc_data(str)
+def get_count(str)
   {
     c: str.length,
     l: str.count("\n"),
@@ -64,19 +64,19 @@ def print_lines(string_parse_results, params)
       next
     end
 
-    print_line(string_parse_result[:wc_data], string_parse_result[:path], params)
+    print_line(string_parse_result[:count], string_parse_result[:path], params)
   end
 end
 
-def print_line(wc_data, path, params)
+def print_line(count, path, params)
   puts [
     '',
-    *format_wc_data(wc_data, params),
+    *format_count(count, params),
     path
   ].compact.join(' ')
 end
 
-def format_wc_data(data, params)
+def format_count(data, params)
   params.keys.map do |key|
     width = [data[key].to_s.length, DEFAULT_LENGTH].max
     data[key].to_s.rjust(width)
@@ -86,11 +86,11 @@ end
 def print_total(strings, params)
   total = Hash.new(0)
   strings.each do |string|
-    next unless string[:wc_data]
+    next unless string[:count]
 
-    string[:wc_data].each { |k, v| total[k] += v.to_i }
+    string[:count].each { |k, v| total[k] += v.to_i }
   end
-  print_line(total.filter { |_, v| v.positive? }, 'total', params)
+  print_line(total, 'total', params)
 end
 
 main
