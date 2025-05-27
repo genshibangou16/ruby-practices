@@ -7,6 +7,7 @@ class Shot
 
   def score
     return 10 if @mark == 'X'
+    return 0 unless @mark
 
     @mark.to_i
   end

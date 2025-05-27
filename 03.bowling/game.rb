@@ -10,7 +10,7 @@ class Game
       frame = Frame.new(
         marks[throw_count],
         marks[throw_count + 1],
-        marks[throw_count + 2] || nil
+        marks[throw_count + 2]
       )
       throw_count += frame.shot_count
       frame
@@ -18,6 +18,6 @@ class Game
   end
 
   def score
-    @frame.map(&:score).sum
+    @frame.sum(&:score)
   end
 end
