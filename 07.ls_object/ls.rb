@@ -12,7 +12,8 @@ class Ls
 
   def initialize(argv)
     @options = Options.new(argv)
-    directory_paths, file_paths = @options.paths.partition { |path| File.directory?(path) }
+    paths = filter_paths(@options.paths)
+    directory_paths, file_paths = paths.partition { |path| File.directory?(path) }
     @files = Files.new(file_paths, reverse: @options.reverse)
     @directories = Directories.new(directory_paths, reverse: @options.reverse, all: @options.all)
   end
@@ -26,6 +27,16 @@ class Ls
   end
 
   private
+
+  def filter_paths(paths)
+    paths.map do |path|
+      if File.exist?(path)
+        path
+      else
+        puts "ls: #{path}: No such file or directory"
+      end
+    end.compact
+  end
 
   def print_short
     print_columns(@files) unless @files.empty?
