@@ -12,10 +12,10 @@ class Ls
 
   def initialize(argv)
     @options = Options.new(argv)
-    @paths = filter_paths(@options.paths)
-    @paths.sort!
-    @paths.reverse! if @options.reverse
-    dir_paths, file_paths = @paths.partition { |path| File.directory?(path) }
+    paths = filter_paths(@options.paths)
+    paths.sort!
+    paths.reverse! if @options.reverse
+    dir_paths, file_paths = paths.partition { |path| File.directory?(path) }
     @file_entries = file_paths.map { |file_path| FileEntry.new(file_path) }
     @dir_entries  = dir_paths.map  { |dir_path|  DirectoryEntry.new(dir_path, @options) }
   end
@@ -45,7 +45,7 @@ class Ls
     puts if @file_entries.any? && @dir_entries.any?
 
     @dir_entries.each_with_index do |directory, idx|
-      print_header(directory.path, idx) if @paths.length > 1
+      print_header(directory.path, idx) if @dir_entries.length + @file_entries.length > 1
       print_columns(directory.file_entries)
     end
   end
@@ -55,21 +55,21 @@ class Ls
     puts if @file_entries.any? && @dir_entries.any?
 
     @dir_entries.each_with_index do |directory, idx|
-      print_header(directory.path, idx) if @paths.length > 1
+      print_header(directory.path, idx) if @dir_entries.length + @file_entries.length > 1
       puts "total #{directory.total}"
       print_stats(directory.file_entries)
     end
   end
 
-  def print_columns(targets)
-    list = targets.map(&:path)
-    col_width = list.map(&:length).max + GAP
-    row_num = (list.length / COL_NUM.to_f).ceil
+  def print_columns(files)
+    paths = files.map(&:path)
+    col_width = paths.map(&:length).max + GAP
+    row_num = (paths.length / COL_NUM.to_f).ceil
 
     row_num.times do |row|
       line = (0...COL_NUM).map do |col|
         idx = row + row_num * col
-        item = list[idx]
+        item = paths[idx]
         item&.ljust(col_width)
       end.compact.join
       puts line
