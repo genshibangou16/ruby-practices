@@ -56,7 +56,7 @@ class Ls
 
     @dir_entries.each_with_index do |directory, idx|
       print_header(directory.path, idx) if @dir_entries.length + @file_entries.length > 1
-      puts "total #{directory.total}"
+      puts "total #{directory.blocks}"
       print_stats(directory.file_entries)
     end
   end

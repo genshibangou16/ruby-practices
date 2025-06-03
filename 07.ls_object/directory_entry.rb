@@ -14,7 +14,7 @@ class DirectoryEntry
     @file_entries = children_paths.map { |children_path| FileEntry.new(children_path, in_dir: true) }
   end
 
-  def total
+  def blocks
     file_entries.map(&:blocks).sum
   end
 end
