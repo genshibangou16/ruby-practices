@@ -2,9 +2,9 @@
 # frozen_string_literal: true
 
 require_relative 'options'
+require_relative 'file_entry'
+require_relative 'directory_entry'
 require 'etc'
-require_relative 'files'
-require_relative 'directories'
 
 class Ls
   COL_NUM = 3
@@ -12,10 +12,12 @@ class Ls
 
   def initialize(argv)
     @options = Options.new(argv)
-    paths = filter_paths(@options.paths)
-    directory_paths, file_paths = paths.partition { |path| File.directory?(path) }
-    @files = Files.new(file_paths, reverse: @options.reverse)
-    @directories = Directories.new(directory_paths, reverse: @options.reverse, all: @options.all)
+    @paths = filter_paths(@options.paths)
+    @paths.sort!
+    @paths.reverse! if @options.reverse
+    dir_paths, file_paths = @paths.partition { |path| File.directory?(path) }
+    @file_entries = file_paths.map { |file_path| FileEntry.new(file_path) }
+    @dir_entries  = dir_paths.map  { |dir_path|  DirectoryEntry.new(dir_path, @options) }
   end
 
   def print
@@ -39,28 +41,28 @@ class Ls
   end
 
   def print_short
-    print_columns(@files) unless @files.empty?
-    puts if @directories.any? && @files.any?
+    print_columns(@file_entries) unless @file_entries.empty?
+    puts if @file_entries.any? && @dir_entries.any?
 
-    @directories.each_with_index do |directory, idx|
-      print_header(directory.path, idx) if @files.length + @directories.length > 1
-      print_columns(directory)
+    @dir_entries.each_with_index do |directory, idx|
+      print_header(directory.path, idx) if @paths.length > 1
+      print_columns(directory.file_entries)
     end
   end
 
   def print_long
-    print_stats(@files) unless @files.empty?
-    puts if @directories.any? && @files.any?
+    print_stats(@file_entries) unless @file_entries.empty?
+    puts if @file_entries.any? && @dir_entries.any?
 
-    @directories.each_with_index do |directory, idx|
-      print_header(directory.path, idx) if @files.length + @directories.length > 1
+    @dir_entries.each_with_index do |directory, idx|
+      print_header(directory.path, idx) if @paths.length > 1
       puts "total #{directory.total}"
-      print_stats(directory)
+      print_stats(directory.file_entries)
     end
   end
 
   def print_columns(targets)
-    list = targets.paths
+    list = targets.map(&:path)
     col_width = list.map(&:length).max + GAP
     row_num = (list.length / COL_NUM.to_f).ceil
 
@@ -79,23 +81,23 @@ class Ls
     puts "#{path}:"
   end
 
-  def print_stats(targets)
+  def print_stats(files)
     max_lengths = {
-      nlink: targets.nlink_max_length,
-      size: targets.size_max_length,
-      uid: targets.uid_max_length,
-      gid: targets.gid_max_length
+      nlink: files.map { |file| file.nlink.to_s.length }.max,
+      size: files.map { |file| file.size.to_s.length }.max,
+      uid: files.map { |file| file.uid.length }.max,
+      gid: files.map { |file| file.gid.length }.max
     }
-    targets.each do |target|
+    files.each do |file|
       puts [
-        target.mode,
-        target.stat.nlink.to_s.rjust(max_lengths[:nlink] + 1),
-        Etc.getpwuid(target.stat.uid).name.ljust(max_lengths[:uid] + 1),
-        Etc.getgrgid(target.stat.gid).name.ljust(max_lengths[:gid] + 1),
-        target.stat.size.to_s.rjust(max_lengths[:size]),
-        target.stat.mtime.strftime('%_m %e %H:%M'),
-        target.path,
-        target.stat.symlink? ? "-> #{File.readlink(target.path)}" : nil
+        file.mode,
+        file.nlink.to_s.rjust(max_lengths[:nlink] + 1),
+        file.uid.ljust(max_lengths[:uid] + 1),
+        file.gid.ljust(max_lengths[:gid] + 1),
+        file.size.to_s.rjust(max_lengths[:size]),
+        file.mtime.strftime('%_m %e %H:%M'),
+        file.path,
+        file.symlink? ? "-> #{file.readlink}" : nil
       ].compact.join(' ')
     end
   end
