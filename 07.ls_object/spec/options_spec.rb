@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Optionsクラス' do
+RSpec.describe 'Optionsクラス' do # rubocop:disable Metrics/BlockLength
   it '-rオプションをつけると変数に格納される' do
     options = Options.new(['-r'])
     expect(options.all).to be_falsy
