@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-require_relative 'options'
+require_relative 'command_line_options'
 require_relative 'file_entry'
 require_relative 'directory_entry'
 require 'etc'
@@ -11,7 +11,7 @@ class Ls
   GAP = 3
 
   def initialize(argv)
-    @options = Options.new(argv)
+    @options = CommandLineOptions.new(argv)
     paths = filter_paths(@options.paths)
     paths.sort!
     paths.reverse! if @options.reverse

@@ -2,7 +2,7 @@
 
 require 'optparse'
 
-class Options
+class CommandLineOptions
   attr_reader :all, :reverse, :long, :paths
 
   def initialize(args)
