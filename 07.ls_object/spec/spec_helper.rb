@@ -99,4 +99,4 @@ RSpec.configure do |config|
   # =end
 end
 
-Dir[File.join(File.dirname(__FILE__), '../07.ls_object/*.rb')].each { |f| require f }
+Dir[File.join(File.dirname(__FILE__), '../*.rb')].each { |f| require f }
