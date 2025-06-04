@@ -10,19 +10,33 @@ class FilePermission
   def initialize(bits, section)
     permission_bits = bits >> SECTION[section][:shift] * 3
 
-    @r        = (permission_bits >> 2) & 1 == 1 ? 'r' : '-'
-    @w        = (permission_bits >> 1) & 1 == 1 ? 'w' : '-'
-    exec_flag = (permission_bits >> 0) & 1 == 1
+    @readable = (permission_bits >> 2) & 1 == 1
+    @writable = (permission_bits >> 1) & 1 == 1
+    @executable = (permission_bits >> 0) & 1 == 1
+    @special_flag = (bits >> 9 + SECTION[section][:shift]) & 1 == 1
+    @special_char = SECTION[section][:special_char]
+  end
 
-    special_flag = (bits >> 9 + SECTION[section][:shift]) & 1 == 1
-    @x = if special_flag
-           exec_flag ? SECTION[section][:special_char] : SECTION[section][:special_char].upcase
-         else
-           exec_flag ? 'x' : '-'
-         end
+  def readable?
+    @readable
+  end
+
+  def writable?
+    @writable
+  end
+
+  def executable?
+    @executable
   end
 
   def to_s
-    [@r, @w, @x].join
+    r = readable? ? 'r' : '-'
+    w = writable? ? 'w' : '-'
+    x = if @special_flag
+          executable? ? @special_char : @special_char.upcase
+        else
+          executable? ? 'x' : '-'
+        end
+    [r, w, x].join
   end
 end
