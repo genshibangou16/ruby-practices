@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative 'permission'
+require_relative 'file_permission'
 
 class FileEntry
   attr_reader :path
@@ -66,7 +66,7 @@ class FileEntry
   def permissions
     mode = @stat.mode
     %i[owner group other].map do |section|
-      Permission.new(mode, section)
+      FilePermission.new(mode, section)
     end
   end
 end

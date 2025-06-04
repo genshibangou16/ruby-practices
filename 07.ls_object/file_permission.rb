@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class Permission
+class FilePermission
   SECTION = {
     owner: { shift: 2, special_char: 's' },
     group: { shift: 1, special_char: 's' },
