@@ -20,7 +20,7 @@ class FileEntry
   end
 
   def uid
-    Etc.getgrgid(@stat.gid).name
+    Etc.getpwuid(@stat.uid).name
   end
 
   def gid
