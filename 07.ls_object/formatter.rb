@@ -8,7 +8,7 @@ class Formatter
     @invalid_paths = invalid_paths
   end
 
-  def lines
+  def run
     @invalid_paths.each do |path|
       @lines.push "ls: #{path}: No such file or directory"
     end
@@ -22,7 +22,7 @@ class Formatter
       format(directory.file_entries)
     end
 
-    @lines
+    @lines.join("\n")
   end
 
   private

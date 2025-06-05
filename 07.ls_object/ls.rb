@@ -22,7 +22,7 @@ class Ls
   def print
     formatter_class = @options.long ? LongFormatter : ShortFormatter
     formatter = formatter_class.new(dir_entries: @dir_entries, file_entries: @file_entries, invalid_paths: @invalid_paths)
-    puts formatter.lines.join("\n")
+    puts formatter.run
   end
 end
 
