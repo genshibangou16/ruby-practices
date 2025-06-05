@@ -5,12 +5,14 @@ class Formatter
     @lines = []
     @dir_entries = dir_entries
     @file_entries = file_entries
-    invalid_paths.each do |path|
-      @lines.push "ls: #{path}: No such file or directory"
-    end
+    @invalid_paths = invalid_paths
   end
 
-  def to_s
+  def lines
+    @invalid_paths.each do |path|
+      @lines.push "ls: #{path}: No such file or directory"
+    end
+
     format(@file_entries) unless @file_entries.empty?
     @lines.push '' if contains_files_and_dirs?
 
@@ -20,7 +22,7 @@ class Formatter
       format(directory.file_entries)
     end
 
-    @lines.join("\n")
+    @lines
   end
 
   private
