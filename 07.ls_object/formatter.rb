@@ -1,9 +1,6 @@
 # frozen_string_literal: true
 
 class Formatter
-  COL_NUM = 3
-  GAP = 3
-
   def initialize(dir_entries:, file_entries:, invalid_paths:)
     @lines = []
     @dir_entries = dir_entries

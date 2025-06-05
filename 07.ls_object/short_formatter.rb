@@ -3,6 +3,9 @@
 require_relative 'formatter'
 
 class ShortFormatter < Formatter
+  COL_NUM = 3
+  GAP = 3
+
   private
 
   def format(files)
