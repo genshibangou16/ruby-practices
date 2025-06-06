@@ -8,3 +8,7 @@ group :development do
   gem 'rubocop'
   gem 'rubocop-fjord', require: false
 end
+
+group :test do
+  gem 'rspec'
+end
